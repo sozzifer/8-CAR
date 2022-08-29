@@ -10,23 +10,6 @@ app = Dash(__name__,
                        "content": "width=device-width, initial-scale=1.0, maximum-scale=1.0"}])
 
 app.layout = dbc.Container([
-    # dbc.Row([
-    #     html.H1("Correlation and Regression")
-    # ]),
-    # dbc.Row([
-    #     html.P(children=[
-    #         "When analysing data, sometimes we want to explore whether the value of one variable depends on another. This allows us to draw a conclusion about whether two variables are associated, and can also allow us to make predictions about future values. ",
-    #         html.Span("Correlation", className="bold-p"),
-    #         " measures the level of agreement between two variables. ",
-    #         html.Span("Regression", className="bold-p"),
-    #         " provides a linear formula for that relationship. The higher the correlation, the closer the observed data points will lie to the ",
-    #         html.Span("regression line", className="bold-p"),
-    #         "."
-    #     ], style={"margin-bottom": 10}),
-    #     html.P(children=[
-    #         "Using the dropdown lists below, explore the correlation between different quantitative variables from the Happy data set. Are there any variables that are particularly strongly associated with each other?"
-    #     ], style={"margin-bottom": 10})
-    # ]),
     dbc.Row([
         dbc.Col([
             html.Div([
@@ -51,7 +34,7 @@ app.layout = dbc.Container([
                     type="invalid")
             ], **{"aria-live": "polite"}),
             html.Br()
-        ], xs=12, sm=12, md=12, lg=3, xl=3),
+        ], xs=12, lg=3),
         dbc.Col([
             html.H4("Results"),
             html.Div([
@@ -68,7 +51,7 @@ app.layout = dbc.Container([
                 html.P(id="reg-eq"),
                 html.Br()
             ], **{"aria-live": "polite"})
-        ], xs=12, sm=12, md=12, lg=5, xl=5),
+        ], xs=12, lg=5),
         dbc.Col([
             html.H4("Prediction"),
             html.P(id="prediction"),
@@ -88,7 +71,7 @@ app.layout = dbc.Container([
                        style={"width": "60%", "margin": "auto 0"},
                        **{"aria-live": "polite"})
             ], className="d-flex")
-        ], xs=12, sm=12, md=12, lg=4, xl=4)
+        ], xs=12, lg=4)
     ]),
     dbc.Row([
         dbc.Col([
@@ -104,7 +87,7 @@ app.layout = dbc.Container([
                      children=[],
                      className="sr-only",
                      **{"aria-live": "polite"})
-        ], xs=12, sm=12, md=12, lg=6, xl=6),
+        ], xs=12, lg=6),
         dbc.Col([
             html.Div([
                 dcc.Graph(id="fit-graph",
@@ -118,7 +101,7 @@ app.layout = dbc.Container([
                      children=[],
                      className="sr-only",
                      **{"aria-live": "polite"})
-        ], xs=12, sm=12, md=12, lg=6, xl=6)
+        ], xs=12, lg=6)
     ])
 ], fluid=True)
 
