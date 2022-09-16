@@ -2,6 +2,7 @@ from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
 from car_model import car_happy
 
+# Specify HTML <head> elements
 app = Dash(__name__,
            title="Correlation and Regression",
            update_title=None,
@@ -9,7 +10,10 @@ app = Dash(__name__,
            meta_tags=[{"name": "viewport",
                        "content": "width=device-width, initial-scale=1.0, maximum-scale=1.0"}])
 
+# Specify app layout (HTML <body> elements) using dash.html, dash.dcc and dash_bootstrap_components
+# All component IDs should relate to the Input or Output of callback functions in *_controller.py
 app.layout = dbc.Container([
+    # Row - User Input, Results and Prediction activity
     dbc.Row([
         dbc.Col([
             html.Div([
@@ -36,8 +40,8 @@ app.layout = dbc.Container([
             html.Br()
         ], xs=12, lg=3),
         dbc.Col([
-            html.H4("Results"),
             html.Div([
+                html.H4("Results"),
                 html.P(children=[
                     html.Span("Correlation coefficient (r): ", className="bold-p"),
                     html.Span(id="pearson")
@@ -50,7 +54,7 @@ app.layout = dbc.Container([
                 html.P("Regression equation: ", className="bold-p"),
                 html.P(id="reg-eq"),
                 html.Br()
-            ], **{"aria-live": "polite"})
+            ], **{"aria-live": "polite", "aria-atomic": "true"})
         ], xs=12, lg=5),
         dbc.Col([
             html.H4("Prediction"),
@@ -65,16 +69,18 @@ app.layout = dbc.Container([
                            n_clicks=0,
                            children="Check answer",
                            class_name="button",
-                           style={"width": "40%"}),
+                           style={"max-width": "40%"}),
                 html.P(id="feedback",
                        className="bold-p",
                        style={"width": "60%", "margin": "auto 0"},
-                       **{"aria-live": "polite"})
+                       **{"aria-live": "polite", "aria-atomic": "true"})
             ], className="d-flex")
         ], xs=12, lg=4)
     ]),
+    # Graphs (Scatter and Fit)
     dbc.Row([
         dbc.Col([
+            # Graph components are placed inside a Div with role="img" to manage UX for screen reader users
             html.Div([
                 dcc.Graph(id="xy-graph",
                           config={"displayModeBar": False,
@@ -82,7 +88,8 @@ app.layout = dbc.Container([
                                   "editable": False,
                                   "scrollZoom": False,
                                   "showAxisDragHandles": False})
-            ], role="img"),
+            ], role="img", **{"aria-hidden": "true"}),
+            # A second Div is used to associate alt text with the relevant Graph component to manage the experience for screen reader users, styled using CSS class sr-only
             html.Div(id="sr-xy",
                      children=[],
                      className="sr-only",
@@ -96,7 +103,7 @@ app.layout = dbc.Container([
                                   "editable": False,
                                   "scrollZoom": False,
                                   "showAxisDragHandles": False})
-            ], role="img"),
+            ], role="img", **{"aria-hidden": "true"}),
             html.Div(id="sr-fit",
                      children=[],
                      className="sr-only",

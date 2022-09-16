@@ -1,14 +1,16 @@
 from dash import Input, Output, State, exceptions, no_update, callback_context as ctx
+import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-import numpy as np
 import random
-from car_view import app
 from car_model import not_null, regression
+from car_view import app
 
 
+# Callback function to update Scatter plot
 @app.callback(
     Output("xy-graph", "figure"),
+    # Input validation - dependent and independent variables must be different
     Output("dropdown-y", "invalid"),
     Input("dropdown-x", "value"),
     Input("dropdown-y", "value")
@@ -34,7 +36,7 @@ def plot_x_y(x, y):
                           yaxis_title=y)
         return fig, False
 
-
+# Callback function to update Fit graph, results and screen reader text for Scatter and Fit based on user selection of dependent/independent variables
 @app.callback(
     Output("fit-graph", "figure"),
     Output("pearson", "children"),
@@ -49,7 +51,7 @@ def plot_res_v_fitted(x, y):
     if x == y:
         return no_update, no_update, no_update, no_update, no_update, no_update
     else:
-        _, params, residuals, fitted, r_sq, r = regression(x, y)
+        _, residuals, fitted, r_sq, r, intercept, slope = regression(x, y)
         fig = go.Figure(
             go.Scatter(x=fitted,
                        y=residuals,
@@ -71,17 +73,17 @@ def plot_res_v_fitted(x, y):
                                  marker_color="#d10373",
                                  hoverinfo="skip",
                                  showlegend=False))
-        intercept = round(params[0], 2)
-        slope = round(params[1], 2)
         if intercept < 0:
             equation = f"{y} = {slope} \u00D7 {x} - {abs(intercept)}"
         else:
             equation = f"{y} = {slope} \u00D7 {x} + {intercept}"
+        # Screen reader text
         sr_xy = f"Graph of {y} versus {x} with regression line {equation}"
         sr_fit = f"Graph of residuals versus fitted values for {y} versus {x}"
         return fig, f"{r:.3f}", equation, f"{r_sq:.3f}", sr_xy, sr_fit
 
 
+# Callback function to generate a prediction activity for the selected dependent/independent variables
 @app.callback(
     Output("prediction", "children"),
     Output("correct-result", "data"),
@@ -91,14 +93,13 @@ def plot_res_v_fitted(x, y):
 )
 def generate_prediction(x, y):
     df = not_null(x, y)
-    _, params, _, _, _, _ = regression(x, y)
+    _, _, _, _, _, intercept, slope = regression(x, y)
     num = round(random.uniform(min(df[x]), max(df[x])), 1)
-    intercept = round(params[0], 2)
-    slope = round(params[1], 2)
     result = round((slope*num) + intercept, 2)
     return f"Use the regression equation to predict the {y} of a student whose {x} is {num}", result, None
 
 
+# Callback function to provide feedback to the user on the prediction activity. Callback context (ctx) used to distinguish which Input has been triggered
 @app.callback(
     Output("feedback", "children"),
     Input("submit", "n_clicks"),
@@ -123,5 +124,6 @@ def check_answer(n_clicks, x, y, answer, result):
 
 
 if __name__ == "__main__":
-    # app.run(debug=False, host="0.0.0.0", port=8080, dev_tools_ui=False)
     app.run(debug=True)
+    # To deploy on Docker, replace app.run(debug=True) with the following:
+    # app.run(debug=False, host="0.0.0.0", port=8080, dev_tools_ui=False)
